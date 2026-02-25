@@ -80,8 +80,19 @@ export class PokemonService {
     return pokemon;
   }
 
-  update(id: number, updatePokemonDto: UpdatePokemonDto) {
-    return `This action updates a #${id} pokemon`;
+  async update(term: string, updatePokemonDto: UpdatePokemonDto) {
+    const pokemon = await this.findOne(term);
+
+    if (updatePokemonDto.name)
+      updatePokemonDto.name = updatePokemonDto.name.toLocaleLowerCase();
+
+    await pokemon.updateOne(updatePokemonDto, { new: true }); // new: true -> Devuelve el documento actualizado y no el original
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return {
+      ...pokemon.toJSON(), // toJSON() -> Convierte el documento de Mongoose a un objeto JavaScript plano
+      ...updatePokemonDto,
+    };
   }
 
   remove(id: number) {
