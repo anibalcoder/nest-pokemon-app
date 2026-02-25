@@ -1,0 +1,10 @@
+services:
+  db:
+    image: mongo:8
+    restart: always
+    ports:
+      - 27017:27017 # Conecta el puerto 27017 del contenedor con el 27017 de tu máquina.
+    environment:
+      MONGODB_DATABASE: nest-pokemon
+    volumes:
+      - ./mongo:/data/db # Monta el directorio local ./mongo en el directorio /data/db del contenedor para persistir los datos.
