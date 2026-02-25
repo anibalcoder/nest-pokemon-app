@@ -15,17 +15,24 @@ export class SeedService {
   ) {}
 
   async execteSeed() {
+    await this.pokemonModel.deleteMany();
+
     const data = await this.http.get<PokeResponse>(
       'https://pokeapi.co/api/v2/pokemon?limit=10',
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    data.results.forEach(async ({ name, url }) => {
+    const pokemonToInsert: { name: string; no: number }[] = [];
+
+    data.results.forEach(({ name, url }) => {
       const segments = url.split('/');
       const no = +segments[segments.length - 2];
 
-      await this.pokemonModel.create({ name, no }); // Inserta un único documento en la colección (no es inserción masiva).
+      //await this.pokemonModel.create({ name, no }); // Inserta un único documento en la colección (no es inserción masiva).
+
+      pokemonToInsert.push({ name, no });
     });
+
+    await this.pokemonModel.insertMany(pokemonToInsert); // Inserción masiva de documentos en la colección (más eficiente que crear uno por uno).
 
     return 'Seed execute';
   }
