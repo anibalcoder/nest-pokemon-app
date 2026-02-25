@@ -3,6 +3,7 @@ import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PokemonModule } from './pokemon/pokemon.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -16,6 +17,14 @@ import { PokemonModule } from './pokemon/pokemon.module';
        */
       rootPath: join(__dirname, '..', 'public'),
     }),
+
+    /**
+     * MongooseModule.forRoot() es un método que configura la conexión a MongoDB utilizando Mongoose.
+     * El argumento 'mongodb://localhost/nest-pokemon' es la URL de conexión a la base de datos MongoDB.
+     * Mongoose es un librería que permite trabajar con MongoDB mediante esquemas y modelos.
+     */
+    MongooseModule.forRoot('mongodb://localhost/nest-pokemon'),
+
     PokemonModule,
   ],
 })
