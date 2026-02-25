@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { Model } from 'mongoose';
@@ -21,10 +25,24 @@ export class PokemonService {
     // Normaliza el nombre a minúsculas antes de guardarlo
     createPokemonDto.name = createPokemonDto.name.toLocaleLowerCase();
 
-    // Inserta un nuevo documento en MongoDB usando el modelo
-    const pokemon = await this.pokemonModel.create(createPokemonDto);
-
-    return pokemon;
+    try {
+      // Inserta un nuevo documento en MongoDB usando el modelo
+      // Se usa await porque la operación es asíncrona y devuelve una Promise.
+      const pokemon = await this.pokemonModel.create(createPokemonDto);
+      return pokemon;
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error.code === 11000) {
+        throw new BadRequestException(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          `Pokemon exists in db ${JSON.stringify(error.keyValue)}`,
+        );
+      }
+      console.log(error);
+      throw new InternalServerErrorException(
+        `Can't create Pokemon - Check server logs`,
+      );
+    }
   }
 
   findAll() {
