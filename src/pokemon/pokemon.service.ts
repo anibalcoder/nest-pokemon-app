@@ -110,6 +110,11 @@ export class PokemonService {
     return;
   }
 
+  async fillPokemonsWithSeedData(pokemons: CreatePokemonDto[]) {
+    const result = this.pokemonModel.insertMany(pokemons);
+    return result;
+  }
+
   private handleExceptions(error: any) {
     if (error.code === 11000) {
       throw new BadRequestException(
