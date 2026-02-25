@@ -12,6 +12,10 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
+      transform: true, // Transforma los payloads a los tipos de datos definidos en los DTOs (Data Transfer Objects)
+      transformOptions: {
+        enableImplicitConversion: true, // Permite la conversión implícita de tipos (por ejemplo, convertir una cadena a un número si el DTO lo define como un número)
+      },
     }),
   );
 
