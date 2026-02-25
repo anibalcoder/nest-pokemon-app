@@ -94,8 +94,20 @@ export class PokemonService {
     // const pokemon = await this.findOne(id);
     // await pokemon.deleteOne();
 
-    const result = await this.pokemonModel.findByIdAndDelete(id);
-    return result;
+    // const result = await this.pokemonModel.findByIdAndDelete(id);
+
+    const { deletedCount } = await this.pokemonModel.deleteOne({
+      _id: id,
+    });
+
+    /**
+     * Así se evita realizar dos consultas a la base de datos (una para buscar y otra para eliminar)
+     * Solo se realiza una consulta y si esa consulta arroja 0 eliminados, se lanza la excepción de no encontrado.
+     */
+    if (deletedCount === 0)
+      throw new NotFoundException(`Pokemon with id "${id}" not found`);
+
+    return;
   }
 
   private handleExceptions(error: any) {
