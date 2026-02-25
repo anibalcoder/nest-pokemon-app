@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   BadRequestException,
   Injectable,
@@ -32,17 +33,7 @@ export class PokemonService {
       const pokemon = await this.pokemonModel.create(createPokemonDto);
       return pokemon;
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (error.code === 11000) {
-        throw new BadRequestException(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          `Pokemon exists in db ${JSON.stringify(error.keyValue)}`,
-        );
-      }
-      console.log(error);
-      throw new InternalServerErrorException(
-        `Can't create Pokemon - Check server logs`,
-      );
+      this.handleExceptions(error);
     }
   }
 
@@ -86,16 +77,32 @@ export class PokemonService {
     if (updatePokemonDto.name)
       updatePokemonDto.name = updatePokemonDto.name.toLocaleLowerCase();
 
-    await pokemon.updateOne(updatePokemonDto, { new: true }); // new: true -> Devuelve el documento actualizado y no el original
+    try {
+      await pokemon.updateOne(updatePokemonDto, { new: true }); // new: true -> Devuelve el documento actualizado y no el original
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return {
-      ...pokemon.toJSON(), // toJSON() -> Convierte el documento de Mongoose a un objeto JavaScript plano
-      ...updatePokemonDto,
-    };
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return {
+        ...pokemon.toJSON(), // toJSON() -> Convierte el documento de Mongoose a un objeto JavaScript plano
+        ...updatePokemonDto,
+      };
+    } catch (error) {
+      this.handleExceptions(error);
+    }
   }
 
   remove(id: number) {
     return `This action removes a #${id} pokemon`;
+  }
+
+  private handleExceptions(error: any) {
+    if (error.code === 11000) {
+      throw new BadRequestException(
+        `Pokemon exists in db ${JSON.stringify(error.keyValue)}`,
+      );
+    }
+
+    throw new InternalServerErrorException(
+      "Can't update Pokemon - Check server logs",
+    );
   }
 }
