@@ -3,11 +3,17 @@ import { PokemonService } from './pokemon.service';
 import { PokemonController } from './pokemon.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Pokemon, PokemonSchema } from './entities/pokemon.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [PokemonController],
   providers: [PokemonService],
   imports: [
+    /**
+     * Importa el ConfigModule dentro del módulo actual,
+     * habilitando el uso de ConfigService mediante el sistema de inyección de dependencias de NestJS.
+     */
+    ConfigModule,
     // forFeature() -> registra modelos dentro de un módulo.
     MongooseModule.forFeature([
       {

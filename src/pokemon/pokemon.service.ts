@@ -11,9 +11,12 @@ import { isValidObjectId, Model } from 'mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginationDto } from 'src/common/dto/pagination-dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PokemonService {
+  private defaultLimit: number;
+
   constructor(
     // Inyecta el modelo de Mongoose registrado con el nombre "Pokemon".
     @InjectModel(Pokemon.name)
@@ -22,8 +25,17 @@ export class PokemonService {
      * y expone métodos como create(), find(), save(), etc.
      */
     private readonly pokemonModel: Model<Pokemon>,
+    /**
+     * Inyecta el servicio de configuración de NestJS.
+     * Permite acceder a las variables definidas en .env y cargadas mediante EnvConfiguration.
+     */
+    private readonly configService: ConfigService,
   ) {
-    console.log(process.env.DEFAULT_LIMIT);
+    /**
+     * get<T>() permite tipar el valor obtenido,
+     * ya que ConfigService retorna `any` por defecto.
+     */
+    this.defaultLimit = configService.get<number>('DEFAULT_LIMIT')!;
   }
 
   async create(createPokemonDto: CreatePokemonDto) {
@@ -41,7 +53,7 @@ export class PokemonService {
   }
 
   findAll(paginationDto: PaginationDto) {
-    const { limit = 10, offset = 0 } = paginationDto;
+    const { limit = this.defaultLimit, offset = 0 } = paginationDto;
 
     return this.pokemonModel
       .find()
