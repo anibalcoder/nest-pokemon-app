@@ -22,7 +22,9 @@ export class PokemonService {
      * y expone métodos como create(), find(), save(), etc.
      */
     private readonly pokemonModel: Model<Pokemon>,
-  ) {}
+  ) {
+    console.log(process.env.DEFAULT_LIMIT);
+  }
 
   async create(createPokemonDto: CreatePokemonDto) {
     // Normaliza el nombre a minúsculas antes de guardarlo
