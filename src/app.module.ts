@@ -6,9 +6,19 @@ import { PokemonModule } from './pokemon/pokemon.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    /**
+     * Carga las variables de entorno desde el archivo .env
+     * y las hace disponibles globalmente en la aplicación NestJS
+     * mediante process.env y el ConfigService.
+     *
+     * Recomendación: definir primero para cargar las variables de entorno antes de iniciar la aplicación.
+     */
+    ConfigModule.forRoot(),
+
     // Configura el módulo para servir archivos estáticos
     ServeStaticModule.forRoot({
       /**
@@ -25,7 +35,7 @@ import { SeedModule } from './seed/seed.module';
      * El argumento 'mongodb://localhost/nest-pokemon' es la URL de conexión a la base de datos MongoDB.
      * Mongoose es un librería que permite trabajar con MongoDB mediante esquemas y modelos.
      */
-    MongooseModule.forRoot('mongodb://localhost/nest-pokemon'),
+    MongooseModule.forRoot(process.env.MONGODB!),
 
     PokemonModule,
 
@@ -34,4 +44,8 @@ import { SeedModule } from './seed/seed.module';
     SeedModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    console.log(process.env);
+  }
+}
