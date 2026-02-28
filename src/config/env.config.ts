@@ -17,6 +17,11 @@
 export const EnvConfiguration = () => ({
   environment: process.env.NODE_ENV || 'dev', // Entorno de ejecución (dev, prod)
   mongodb: process.env.MONGODB,
-  port: process.env.PORT || 3002,
-  defaultLimit: process.env.DEFAULT_LIMIT || 7,
+  /**
+   * process.env siempre devuelve valores como string,
+   * Si la variable no existe, se usa el valor por defecto (7),
+   * pero cuando sí existe seguirá siendo string.
+   */
+  port: Number(process.env.PORT) || 3002,
+  defaultLimit: Number(process.env.DEFAULT_LIMIT) || 7,
 });
