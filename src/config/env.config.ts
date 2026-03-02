@@ -16,6 +16,7 @@
  */
 export const EnvConfiguration = () => ({
   environment: process.env.NODE_ENV || 'dev', // Entorno de ejecución (dev, prod)
+  dbName: process.env.DB_NAME || 'pokemonsdb',
   mongodb: process.env.MONGODB,
   /**
    * process.env siempre devuelve valores como string,
